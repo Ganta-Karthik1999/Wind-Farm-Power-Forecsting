@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wind Power Forecasting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ url_for('static', filename='Wind_farms_background.jpeg') }}"); /* Load background image */
+            background-size: cover; /* Cover the entire background */
+            background-position: center; /* Center the background image */
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 30px auto 0; /* Added margin to the top */
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.95); /* Added background color with opacity */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px; /* Added space before the title */
+            margin-bottom: 50px; /* Added space after the title */
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center align horizontally */
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+            width: 180px;
+            text-align: right;
+            margin-right: 10px;
+            font-size: 16px;
+            line-height: 32px;
+            align-self: flex-start; /* Align label vertically to the top */
+            margin-top: 5px; /* Add a small margin to the top */
+        }
+
+        select,
+        input[type="submit"] {
+            padding: 12px; /* Increase button padding */
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            width: 150px;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            display: block; /* Make button full width */
+            margin: 0 auto; /* Center horizontally */
+            margin-bottom: 50px; /* Added space after the title */
+            font-weight: bold;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Style for the predictions */
+        #predictions {
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+            display: flex; /* Use flexbox for layout */
+            justify-content: center; /* Center items horizontally */
+            flex-wrap: wrap; /* Allow items to wrap onto next line */
+        }
+
+        #predictions h2 {
+            width: 100%; /* Make the title span the full width */
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .column {
+            flex: 1; /* Each column takes up equal space */
+            padding: 0 10px; /* Add some spacing between columns */
+        }
+
+        #predictions ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #predictions ul li {
+            margin-bottom: 10px;
+            font-size: 12px; /* Adjust the font size of the prediction values */
+        }
+
+        #predictions #plot {
+            margin-top: 20px; /* Add some space between predictions and plot */
+            text-align: center;
+        }
+
+        #predictions #plot img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .left-column {
+            font-size: 16px; /* Increase font size for left column */
+            text-align: left; /* Align text to the left */
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Wind Power Forecasting</h1> <!-- Added space before and after the title -->
+        <form action="/forecast" method="post">
+            <div class="form-group">
+                <label for="farm_id">Wind farm ID</label>
+                <select id="farm_id" name="farm_id">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="horizon">Forecasting horizon</label>
+                <select id="horizon" name="horizon">
+                    <option value="6">6 hours</option>
+                    <option value="12">12 hours</option>
+                    <option value="24">24 hours</option>
+                </select>
+            </div>
+            <input type="submit" value="Forecast">
+        </form>
+
+        <!-- Section to display the predictions -->
+        <div id="predictions">
+            <h2>Predictions</h2>
+            <div class="column left-column">
+                {% if additional_info %}
+                    <p>{{ additional_info }}</p>
+                {% endif %}
+                <ul>
+                    {% if predictions %}
+                        {% for timestamp, power_value in predictions %}
+                            <li><span class="timestamp">{{ timestamp }}</span> - Power: <span>{{ power_value }}</span></li>
+                        {% endfor %}
+                    {% else %}
+                        <li>No predictions available.</li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="column" id="plot">
+                {% if plot_base64 %}
+                    <img src="data:image/png;base64,{{ plot_base64 }}" alt="Forecast Plot">
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
